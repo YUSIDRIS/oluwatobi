@@ -1,2 +1,2 @@
 [web]
-ec2-34-223-48-34.us-west-2.compute.amazonaws.com ansible_python_interpreter=/usr/bin/python2
+ec2-35-86-220-138.us-west-2.compute.amazonaws.com ansible_python_interpreter=/usr/bin/python2
