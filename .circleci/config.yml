@@ -63,11 +63,11 @@ jobs:
             - textfile.txt 
 
   promote_to_production:
-  docker:
-    - image: amazon/aws-cli
-  steps:
-    - checkout
-    - run:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
         name: Execute cloudfront.yml
         command: |
           aws cloudformation deploy \
@@ -77,18 +77,18 @@ jobs:
   
 
   clean_up_old_front_end:
-  docker:
-    - image: amazon/aws-cli
-  steps:
-    - checkout
-    - run: yum install -y tar gzip
-    - attach_workspace:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run: yum install -y tar gzip
+      - attach_workspace:
         at: ~/
-    - run:
-        name: Destroy the previous S3 bucket and CloudFormation stack. 
+      - run:
+         name: Destroy the previous S3 bucket and CloudFormation stack. 
         # Use $OldBucketID environment variable or mybucket644752792305 below.
         # Similarly, you can create and use $OldStackID environment variable in place of production-distro 
-        command: |
+         command: |
           export OldBucketID=$(cat ~/textfile.txt)
           aws s3 rm "s3://${OldBucketID}" --recursive
 
@@ -103,19 +103,15 @@ jobs:
           #command:  return 1
       #- destroy_environment 
         
-        
-
-
- 
 workflows:
-    my_workflow:
-      jobs:
-        - create_and_deploy_front_end
-        - promote_to_production:
-            requires: 
-              - create_and_deploy_front_end
-        - get_last_deployment_id
-        - clean_up_old_front_end:
-            requires:
-              - get_last_deployment_id
-              - promote_to_production
+  my_workflow:
+    jobs:
+      - create_and_deploy_front_end
+      - promote_to_production:
+        requires: 
+          - create_and_deploy_front_end
+      - get_last_deployment_id
+      - clean_up_old_front_end:
+          requires:
+            - get_last_deployment_id
+            - promote_to_production
